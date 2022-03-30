@@ -1,0 +1,27 @@
+version: "3.5"
+
+#volumes:
+#  gapp_mongodb_data:
+#  gapp_keycloak_data:
+
+services:
+  fhir-server:
+    image: hapiproject/hapi:v5.6.0
+    ports:
+      - 8083:8080
+
+  gapp-keycloak:
+    image: "jboss/keycloak:15.1.1"
+    ports:
+      - 8084:8080
+    restart: always
+    #command: ["-b", "0.0.0.0", "-Djboss.socket.binding.port-offset=5"] #-b 0.0.0.0
+    environment:
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=ExampleAccount!
+      - DB_VENDOR=h2
+      #- KEYCLOAK_IMPORT=/tmp/realm-export.json
+      #- PROXY_ADDRESS_FORWARDING=true
+      #- KEYCLOAK_FRONTEND_URL=http://localhost:5000/auth
+      #  volumes:
+      #- penpot_assets_data:/opt/data
