@@ -1,7 +1,9 @@
 package com.example.application.views;
 
 
+import com.example.application.service.keycloak.AuthenticationService;
 import com.example.application.views.about.AboutView;
+import com.example.application.views.vicon.DashboardView;
 import com.example.application.views.vicon.LoginView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
@@ -18,6 +20,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.shared.communication.PushMode;
 import org.keycloak.KeycloakPrincipal;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
@@ -67,7 +70,11 @@ public class MainLayout extends AppLayout {
 
     private H1 viewTitle;
 
-    public MainLayout() {
+    private final AuthenticationService authenticationService;
+
+    @Autowired
+    public MainLayout(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
         setPrimarySection(Section.DRAWER);
         createHeaderContent();
         addToDrawer(createDrawerContent());
@@ -97,6 +104,7 @@ public class MainLayout extends AppLayout {
 
         viewTitle = new H1();
         viewTitle.addClassNames("view-title");
+        this.setDrawerOpened(false);
 
         HorizontalLayout horizontal = new HorizontalLayout(toggle, viewTitle);
         horizontal.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
@@ -127,8 +135,7 @@ public class MainLayout extends AppLayout {
     private Component getLoginLogoutButton() {
         Button loginLogoutButton;
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal instanceof KeycloakPrincipal) {
-            KeycloakPrincipal keycloakPrincipal = (KeycloakPrincipal) principal;
+        if (principal instanceof KeycloakPrincipal keycloakPrincipal) {
             String username = keycloakPrincipal.getKeycloakSecurityContext().getIdToken().getPreferredUsername();
 
             loginLogoutButton = new Button("Ausloggen (" + username + ")");
@@ -160,8 +167,9 @@ public class MainLayout extends AppLayout {
 
         for (MenuItemInfo menuItem : createMenuItems()) {
             list.add(menuItem);
-
         }
+
+        list.add(getLoginLogoutButton());
         return nav;
     }
 
@@ -169,7 +177,10 @@ public class MainLayout extends AppLayout {
         return new MenuItemInfo[]{ //
                 new MenuItemInfo("ViCon", "la la-cloud", LoginView.class), //
 
+                new MenuItemInfo("Dashboard", "la la-file", DashboardView.class), //
                 new MenuItemInfo("About", "la la-file", AboutView.class), //
+
+
 
         };
     }

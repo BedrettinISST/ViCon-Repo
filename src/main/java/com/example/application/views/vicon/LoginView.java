@@ -1,17 +1,14 @@
 package com.example.application.views.vicon;
 
+import com.example.application.service.keycloak.AuthenticationService;
 import com.example.application.views.MainLayout;
-import com.vaadin.flow.component.Key;
-import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
-import com.vaadin.flow.shared.communication.PushMode;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 @PageTitle("ViCon")
@@ -19,7 +16,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 @RouteAlias(value = "", layout = MainLayout.class)
 public class LoginView extends VerticalLayout {
 
-    public LoginView() {
+    private final AuthenticationService authenticationService;
+
+    @Autowired
+    public LoginView(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
 
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Image image = new Image("images/ViCon-Logo-Transparent.png", "ViConLogo2");
